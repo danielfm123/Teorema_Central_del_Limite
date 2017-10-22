@@ -7,6 +7,7 @@
 
 library(shiny)
 library(ggplot2)
+library(reshape2)
 
 shinyServer(function(input, output,session) {
   
@@ -89,8 +90,7 @@ shinyServer(function(input, output,session) {
                          quantil_75 = quantile(promedios()$promedio,.75),
                          prom_desvest = mean(desvest()$promedio)
       )
-      tabla = t(tabla)
-      colnames(tabla) = "valor"
+      tabla = melt(tabla,value.name = "Valor",variable.name="Indicador")
       return(tabla)
     })
     
