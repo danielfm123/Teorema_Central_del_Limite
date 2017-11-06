@@ -27,7 +27,8 @@ shinyServer(function(input, output,session) {
           exp = funcion(x,par[1]),
           t = funcion(x,par[1]),
           cauchy = funcion(x,par[1],par[2]),
-          chisq = funcion(x,par[1],par[2])
+          chisq = funcion(x,par[1],par[2]),
+          binom = funcion(x,par[1],par[2])
         )
       }
     }
@@ -41,7 +42,9 @@ shinyServer(function(input, output,session) {
               cauchy = list(numericInput("par1","location",0),
                             numericInput("par2","escala",1,min = 0)),
               chisq =  list(numericInput("par1","gragdos de libertad",10,min = 0,step = 1),
-                            numericInput("par2","ncp",1,min = 0))
+                            numericInput("par2","ncp",1,min = 0)),
+              binom = list(numericInput("par1","size",1),
+                           numericInput("par2","tasa",0.5))
       )
     })
     
@@ -83,12 +86,16 @@ shinyServer(function(input, output,session) {
     output$tabla_indicadores = renderTable({
       tabla = data.frame(promedio = mean(promedios()$promedio),
                          desvest = sd(promedios()$promedio),
-                         maximo = max(promedios()$promedio),
+                         prom_desvest = mean(desvest()$promedio),
                          minimo = min(promedios()$promedio),
-                         mediana = quantile(promedios()$promedio,.5),
+                         quantil_01 = quantile(promedios()$promedio,.01),
+                         quantil_05 = quantile(promedios()$promedio,.05),
                          quantil_25 = quantile(promedios()$promedio,.25),
+                         mediana = quantile(promedios()$promedio,.5),
                          quantil_75 = quantile(promedios()$promedio,.75),
-                         prom_desvest = mean(desvest()$promedio)
+                         quantil_95 = quantile(promedios()$promedio,.95),
+                         quantil_99 = quantile(promedios()$promedio,.99),
+                         maximo = max(promedios()$promedio)
       )
       tabla = melt(tabla,value.name = "Valor",variable.name="Indicador")
       return(tabla)
