@@ -12,7 +12,8 @@ shinyUI(pageWithSidebar(
                   Student = "t",
                   Cauchy = "cauchy",
                   Chi2 = "chisq",
-                  Binomial = "binom"
+                  Binomial = "binom",
+                  Sample = "sample"
                   )
                 ),
     h4("parametros distribucion"),

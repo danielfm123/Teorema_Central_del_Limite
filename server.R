@@ -4,6 +4,8 @@ library(reshape2)
 
 shinyServer(function(input, output,session) {
   
+    values = reactiveValues()
+  
     parametros = reactive({
       c(input$par1,input$par2)
     })
@@ -21,7 +23,8 @@ shinyServer(function(input, output,session) {
           t = funcion(x,par[1]),
           cauchy = funcion(x,par[1],par[2]),
           chisq = funcion(x,par[1],par[2]),
-          binom = funcion(x,par[1],par[2])
+          binom = funcion(x,par[1],par[2]),
+          sample = funcion(x)
         )
       }
     }
@@ -37,7 +40,8 @@ shinyServer(function(input, output,session) {
               chisq =  list(numericInput("par1","gragdos de libertad",10,min = 0,step = 1),
                             numericInput("par2","ncp",1,min = 0)),
               binom = list(numericInput("par1","size",1),
-                           numericInput("par2","tasa",0.5))
+                           numericInput("par2","tasa",0.5)),
+              sample = list(fileInput("sample_file","Excel Sample"))
       )
     })
     
@@ -100,4 +104,35 @@ shinyServer(function(input, output,session) {
       h = h + geom_density( alpha = .3, fill = "blue", size = 0)
       return(h)
     })
+    
+    observe({
+      library(openxlsx)
+      inFile <- input$sample_file
+      
+      if(!is.null(inFile)){
+        values$muestra_empirica = read.xlsx(inFile$datapath,1)[,1]
+      }
+    })
+    
+    
+    dsample = function(x){
+      cortes = cut(values$muestra_empirica,c(-Inf,x,Inf) )
+      distribucion = table(cortes)/length(cortes)
+      distribucion = distribucion[c(-1,-length(distribucion))]
+      c(0,distribucion/diff(x))
+    }
+    
+    psample = function(x){
+      sapply(x,function(y){mean(y > values$muestra_empirica)})
+    }
+    
+    rsample = function(n){
+      experimentos = lapply(1:(n / input$tamano_muestra), function(x) {
+        sample(values$muestra_empirica, n / input$experimentos)
+      })
+      do.call(c,experimentos)
+    }
 })
+
+
+
