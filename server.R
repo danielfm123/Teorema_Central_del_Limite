@@ -1,6 +1,7 @@
 library(shiny)
 library(ggplot2)
 library(reshape2)
+library(openxlsx)
 
 shinyServer(function(input, output,session) {
   
@@ -106,7 +107,6 @@ shinyServer(function(input, output,session) {
     })
     
     observe({
-      library(openxlsx)
       inFile <- input$sample_file
       
       if(!is.null(inFile)){
